@@ -65,7 +65,9 @@ def assignment_main(make_assignment, make_args=None):
     parser.add_argument('--student-list',
                         default=None,
                         help='colnet copy-pasted student list')
-    parser.add_argument('--output', help='output file, can be a .zip or other')
+    parser.add_argument('--output', help='output file/directory,'
+                        ' can be a .zip or other',
+                        required=True)
     args = parser.parse_args()
 
     def make_assignment2(student):
@@ -75,11 +77,14 @@ def assignment_main(make_assignment, make_args=None):
                                 student=student)
 
     if args.student_list is None:
-        student_list = [None]  # one student with no name
+        ass, sol = make_assignment(
+            teacher=args.teacher, date=args.date, student=u'Student name')
+        ass.make(args.output)
+        sol.make('sol_' + args.output)
     else:
         student_list = list(parse_colnet_class_list(
             codecs.open(args.student_list, encoding='utf-8').readlines()))
-    batch_assignment(make_assignment2, student_list, args.output, make_args)
+        batch_assignment(make_assignment2, student_list, args.output, make_args)
 
 
 def batch_assignment(make_assignment, students, output, make_args=None):
